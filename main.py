@@ -4,19 +4,15 @@ import random
 from copy import deepcopy
 
 def create_board(n):
-    board = {}
-    random_values = list(range(n))
-    random.shuffle(random_values)
-    
-    for i,j in enumerate(list(range(n))):
-        board[j] = random_values[i]
+    board = list(range(n))
+    random.shuffle(board)
     
     return board
 
 def display(board):
     size = len(board)
-    print('Displaying board of size:', size)
-    if(size <= 30):
+    print('\nDisplaying board of size', size)
+    if(size <= 40):
         for i in range(len(board)):
             for j in range(len(board)):
                 if board[j] == i:
@@ -24,11 +20,6 @@ def display(board):
                 else:
                     print('+ ', end="")
             print()
-        print('\n')
-    else:
-        for column, row in board.items():
-            print("{} => {}".format(column, row))
-        print('\n')
             
 def calc_number_of_conflics_in_diag(number_of_quens_in_diag):
     if number_of_quens_in_diag < 2:
@@ -68,11 +59,19 @@ def evaluate_solution(board):
 
 
 def simulated_annealing(queens, current_solution, temp, cool_down_tax):
+    iterations = 1;
     reached_global_max = False
     
     current_solution_cost = evaluate_solution(current_solution)
     
-    while temp > 0 and not reached_global_max:
+    print("Initial solution with", current_solution_cost, "conflicts")
+    print("Calculating best solution...\n")
+    
+    while temp > 1/10**10 and not reached_global_max:
+        if(iterations % 1000 == 0):
+            print("Iteration:", iterations, " - Temperature:", temp)
+            
+        iterations += 1
         temp *= cool_down_tax
         
         # Gerando índices aleatórios para realizar a troca de um par de rainhas, na nova solução candidata
@@ -96,25 +95,27 @@ def simulated_annealing(queens, current_solution, temp, cool_down_tax):
         if(current_solution_cost == 0):
             reached_global_max = True
     
-    return current_solution 
+    return iterations, current_solution 
         
 
 if __name__ == "__main__":
     start = time.time()
 
-    # random.seed(12)
     number_of_queens = 100
-    temperature = 100
-    cool_down_tax = 0.999
+    initial_temperature = 100
+    cool_down_tax = 1 - (1/10**4)
    
     initial_solution = create_board(number_of_queens)
-    print("Initial solution with", evaluate_solution(initial_solution), "conflicts")
-    display(initial_solution)
     
-    solution = simulated_annealing(number_of_queens, initial_solution, temperature, cool_down_tax)
+    iterations, solution = simulated_annealing(
+        number_of_queens,
+        initial_solution,
+        initial_temperature,
+        cool_down_tax)
     
-    print("Best solution found with", evaluate_solution(solution), "conflicts")
-    display(solution)
+    if(number_of_queens <= 40):
+        display(solution)
     
-    
+    print("\nBest solution found with", evaluate_solution(solution), "conflict(s)")
+    print("Number of Iterations: ", iterations)
     print("Done in :", time.time() - start, " seconds.")
