@@ -101,7 +101,7 @@ def simulated_annealing(queens, current_solution, temp, cool_down_tax):
 if __name__ == "__main__":
     start = time.time()
 
-    number_of_queens = 100
+    number_of_queens = 8
     initial_temperature = 100
     cool_down_tax = 1 - (1/10**4)
    
