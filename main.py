@@ -1,7 +1,7 @@
 from math import exp
 import time
 import random
-from copy import deepcopy
+from copy import copy
 
 def create_board(n):
     board = list(range(n))
@@ -11,8 +11,8 @@ def create_board(n):
 
 def display(board):
     size = len(board)
-    print('\nDisplaying board of size', size)
     if(size <= 40):
+        print('Displaying board of size', size)
         for i in range(len(board)):
             for j in range(len(board)):
                 if board[j] == i:
@@ -58,7 +58,8 @@ def evaluate_solution(board):
     return number_of_conflicts
 
 
-def simulated_annealing(queens, current_solution, temp, cool_down_tax):
+def simulated_annealing(current_solution, temp, cool_down_tax):
+    queens = len(current_solution) # pegando tamanho do tabuleiro
     iterations = 1;
     reached_global_max = False
     
@@ -79,18 +80,20 @@ def simulated_annealing(queens, current_solution, temp, cool_down_tax):
         while new_queen_index[0] == new_queen_index[1]:
             new_queen_index = [random.randrange(0, queens), random.randrange(0, queens)]
             
-        new_candidate_solution = deepcopy(current_solution)
+        new_candidate_solution = copy(current_solution)
             
         # Realizando troca de um par de rainhas, atribuíndo a linha de uma para outra
         aux = new_candidate_solution[new_queen_index[0]];
         new_candidate_solution[new_queen_index[0]] = new_candidate_solution[new_queen_index[1]]
         new_candidate_solution[new_queen_index[1]] = aux
         
-        variation = evaluate_solution(new_candidate_solution) - current_solution_cost
+        new_cost = evaluate_solution(new_candidate_solution)
+        
+        variation = new_cost - current_solution_cost
         
         if(variation < 0 or random.uniform(0, 1) < exp(-variation/temp)):
-            current_solution = deepcopy(new_candidate_solution)
-            current_solution_cost = evaluate_solution(current_solution)
+            current_solution = copy(new_candidate_solution)
+            current_solution_cost = new_cost
             
         if(current_solution_cost == 0):
             reached_global_max = True
@@ -101,14 +104,13 @@ def simulated_annealing(queens, current_solution, temp, cool_down_tax):
 if __name__ == "__main__":
     start = time.time()
 
-    number_of_queens = 8
+    number_of_queens = 300
     initial_temperature = 100
     cool_down_tax = 1 - (1/10**4)
    
     initial_solution = create_board(number_of_queens)
     
     iterations, solution = simulated_annealing(
-        number_of_queens,
         initial_solution,
         initial_temperature,
         cool_down_tax)
