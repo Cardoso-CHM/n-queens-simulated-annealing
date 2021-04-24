@@ -22,10 +22,6 @@ def display(board):
             print()
             
 def calc_number_of_conflics_in_diag(number_of_quens_in_diag):
-    if number_of_quens_in_diag < 2:
-        return 0
-    if number_of_quens_in_diag == 2:
-        return 1
     
     return (number_of_quens_in_diag - 1) * number_of_quens_in_diag / 2
             
@@ -37,7 +33,7 @@ def evaluate_solution(board):
     
     for column in board:
         current_principal_diag_index = column - board[column]
-        current_secondary_diag_index = column + board[column]
+        current_secondary_diag_index = column + board[column] - len(board)
         
         if current_principal_diag_index not in principal_diags_used:
             principal_diags_used[current_principal_diag_index] = 1
@@ -104,9 +100,9 @@ def simulated_annealing(current_solution, temp, cool_down_tax):
 if __name__ == "__main__":
     start = time.time()
 
-    number_of_queens = 300
+    number_of_queens = 100
     initial_temperature = 100
-    cool_down_tax = 1 - (1/10**4)
+    cool_down_tax = 0.999
    
     initial_solution = create_board(number_of_queens)
     
