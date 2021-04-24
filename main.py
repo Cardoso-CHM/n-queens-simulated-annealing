@@ -33,7 +33,7 @@ def evaluate_solution(board):
     
     for column in board:
         current_principal_diag_index = column - board[column]
-        current_secondary_diag_index = column + board[column] - len(board)
+        current_secondary_diag_index = column + board[column] - len(board) - 1
         
         if current_principal_diag_index not in principal_diags_used:
             principal_diags_used[current_principal_diag_index] = 1
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     number_of_queens = 100
     initial_temperature = 100
-    cool_down_tax = 0.999
+    cool_down_tax = 0.99
    
     initial_solution = create_board(number_of_queens)
     
